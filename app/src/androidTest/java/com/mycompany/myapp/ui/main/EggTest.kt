@@ -8,10 +8,18 @@ import android.support.test.uiautomator.By
 import android.support.test.uiautomator.UiDevice
 import android.support.test.uiautomator.Until
 import android.util.Log
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
 class EggTest{
+
+    lateinit var deviceDimensions: DeviceDimensions
+
+    @Before
+    fun setup() {
+        deviceDimensions = PH1Device()
+    }
 
     @Test
     fun makeEggs(){
@@ -23,23 +31,21 @@ class EggTest{
 
             for (z in 1..5) {
                 for (j in 1..5) {
-                    for (i in 1..50) {
-                        uidevice.click(540, 1773)
-                    }
+                    val pos = deviceDimensions.getHactchPos()
+                    uidevice.drag(pos.x-10,pos.y,pos.x+10,pos.y,500)//1 step =  5ms
                     justWait(uidevice, 5000)
                 }
                 Log.w("EggTest", "Checking for package...")
 
                 for (j in 1..2) {
-                    uidevice.click(996, 255)//click top right corner (try to get package)
+                    val pkgPos = deviceDimensions.getPkgPos()
+                    val acceptPos = deviceDimensions.getAcceptPkgPos()
+                    uidevice.click(pkgPos.x, pkgPos.y)//click top right corner (try to get package)
                     justWait(uidevice, 2000)
-                    uidevice.click(342, 1140)//accept package (if available)
+                    uidevice.click(acceptPos.x, acceptPos.y)//accept package (if available)
                     justWait(uidevice, 2000)
                 }
 
-                uidevice.click(123, 1818)//click research (incase we accidentally opened housing)
-                justWait(uidevice, 2000)
-                uidevice.click(123, 1818)//exit research
             }
 
         }
@@ -61,7 +67,8 @@ class EggTest{
         device.wait(Until.hasObject(By.pkg("com.auxbrain.egginc.EggIncActivity").depth(0)), 5000)
 
         justWait(device, 2000)
-        device.click(350,1100)//click "Collect and Refill silos" incase we've been closed for a while
+        val resumeBtnPos = deviceDimensions.getResumeButton()
+        device.click(resumeBtnPos.x, resumeBtnPos.y)//click "Collect and Refill silos" incase we've been closed for a while
     }
 
 
